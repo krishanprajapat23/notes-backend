@@ -1,0 +1,30 @@
+GET http://localhost:3001/api/notes/1
+
+####
+GET http://localhost:3001/api/notes
+
+####
+
+POST http://localhost:3001/api/notes/
+Content-Type: application/json
+
+{
+    "content": "testing from rest client",
+    "important": true
+}
+
+####
+
+DELETE http://localhost:3001/api/notes/4
+
+
+
+####
+
+PUT http://localhost:3001/api/notes/4
+Content-Type: application/json
+
+{
+    "content": "testing client",
+    "important": false
+}

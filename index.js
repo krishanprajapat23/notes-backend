@@ -8,6 +8,8 @@ app.use(express.json());
 // take the middleware to use and allow for requests from all origins:
 app.use(cors())
 
+// built-in express middleware [static]
+app.use(express.static('dist'))
 
 
  // not recommended the maxID method but replace soon

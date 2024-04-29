@@ -6,14 +6,19 @@ const app = express()
 const Note = require('./models/note')
 // only add  Moving db configuration to its own module e.g. models/note.js
 
-// activate the json-parser 
-app.use(express.json());
 
 // take the middleware to use and allow for requests from all origins:
 app.use(cors())
 
 // built-in express middleware [static]
 app.use(express.static('dist'))
+
+
+// activate the json-parser 
+app.use(express.json());
+
+
+// app.use(requestLogger)
 
 
  // not recommended the maxID method but replace soon
@@ -80,43 +85,7 @@ let notes = [
   })
 
 
-//   all collection get
-/* 
-  app.get('/api/notes', (request, response) => {
-    response.json(notes)
-  })
-*/
-
-
-  // with mongoose
-  app.get('/api/notes', (request, response) => {
-    Note.find({}).then(notes => {
-      response.json(notes)
-    })
-  })
-
-
-//   for individual id get
-  app.get('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const note = notes.find(note => {
-        // console.log(note.id, typeof note.id, id, typeof id, note.id === id)
-        return note.id === id
-      })
-    // console.log(note)
-    if (note) {
-        response.json(note)
-      } else {
-        // response.status(404).end()
-        response.statusMessage = "Page Not Found.";
-        response.status(404).end();
-      }
-  })
-
-
-
-
-//   post request
+  //   post request
   app.post('/api/notes', (request, response) => {
     // const note = request.body
     // console.log(note)
@@ -155,12 +124,52 @@ let notes = [
   })
 
 
+
+//   all collection get
+/* 
+  app.get('/api/notes', (request, response) => {
+    response.json(notes)
+  })
+*/
+
+
+  // all collection get with mongoose
+  app.get('/api/notes', (request, response) => {
+    Note.find({}).then(notes => {
+      response.json(notes)
+    })
+  })
+
+
+//   for individual id get
+  // app.get('/api/notes/:id', (request, response) => {
+  //   const id = Number(request.params.id)
+  //   const note = notes.find(note => {
+  //       // console.log(note.id, typeof note.id, id, typeof id, note.id === id)
+  //       return note.id === id
+  //     })
+  //   // console.log(note)
+  //   if (note) {
+  //       response.json(note)
+  //     } else {
+  //       // response.status(404).end()
+  //       response.statusMessage = "Page Not Found.";
+  //       response.status(404).end();
+  //     }
+  // })
+
+
     // with mangoose indiviual id get=========================
-    app.get('/api/notes/:id', (request, response) => {
-      const id = request.params.id;
-      Note.findById(id).then(note => {
-        response.json(note)
-      })
+    app.get('/api/notes/:id', (request, response, next) => {
+      Note.findById(request.params.id)
+        .then(note => {
+          if (note) {
+            response.json(note)
+          } else {
+            response.status(404).end()
+          }
+        })
+        .catch(error => next(error))
     })
 
 
@@ -208,7 +217,7 @@ let notes = [
   // })
 
 
-  // with mangoose=========================
+  // with mangoose for delete=========================
   app.delete('/api/notes/:id', (request, response, next) => {
     Note.findByIdAndDelete(request.params.id)
       .then(result => {
@@ -216,7 +225,6 @@ let notes = [
       })
       .catch(error => next(error))
   })
-
 
 
 
@@ -233,5 +241,19 @@ let notes = [
   const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
   }
+  // handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+//  error handling into middleware
+  const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
   
-  app.use(unknownEndpoint)
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+  
+    next(error)
+  }
+  
+  // this has to be the last loaded middleware, also all the routes should be registered before this!
+  app.use(errorHandler)

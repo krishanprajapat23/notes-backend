@@ -171,6 +171,8 @@ d)
 
 
 
+8. validation functionality available in Mongoose
+
 
 
 

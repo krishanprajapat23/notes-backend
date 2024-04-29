@@ -86,7 +86,7 @@ let notes = [
 
 
   //   post request
-  app.post('/api/notes', (request, response) => {
+  app.post('/api/notes', (request, response, next) => {
     // const note = request.body
     // console.log(note)
     // response.json(note)
@@ -117,9 +117,11 @@ let notes = [
       important: body.important || false,
     })
   
-    note.save().then(savedNote => {
+    note.save()
+    .then(savedNote => {
       response.json(savedNote)
     })
+    .catch(error => next(error))
 
   })
 
@@ -191,20 +193,32 @@ let notes = [
   // with Mongoose update note by ID=========================
 
   app.put('/api/notes/:id', (request, response, next) => {
-    const body = request.body
-  
+    const body = request.body;
+    // validation on update=====
+    const { content, important } = request.body
+    // validation on update=====
     const note = {
       content: body.content,
       important: body.important,
     }
   
-    Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    Note.findByIdAndUpdate(
+      request.params.id, 
+      { content, important },
+      { new: true, runValidators: true, context: 'query' }
+    ) 
       .then(updatedNote => {
         response.json(updatedNote)
       })
       .catch(error => next(error))
   })
   
+  
+
+  
+
+
+
 
 
 
@@ -250,7 +264,9 @@ app.use(unknownEndpoint)
   
     if (error.name === 'CastError') {
       return response.status(400).send({ error: 'malformatted id' })
-    } 
+    } else if (error.name === 'ValidationError') {
+      return response.status(400).json({ error: error.message })
+    }
   
     next(error)
   }

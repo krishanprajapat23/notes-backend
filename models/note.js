@@ -20,7 +20,12 @@ mongoose.connect(url)
   })
 
 const noteSchema = new mongoose.Schema({
-  content: String,
+  // validation functionality available in Mongoose
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
   important: Boolean,
 })
 

@@ -1,6 +1,10 @@
+require('dotenv').config();
 const express = require('express')
 const cors = require('cors')
 const app = express()
+// only add after Moving db configuration to its own module e.g. models/note.js
+const Note = require('./models/note')
+// only add  Moving db configuration to its own module e.g. models/note.js
 
 // activate the json-parser 
 app.use(express.json());
@@ -19,6 +23,38 @@ const generateId = () => {
       : 0
     return maxId + 1
 }
+
+// commented because Moving db configuration to its own module e.g. models/note.js
+/*
+const mongoose = require('mongoose')
+
+const password = process.argv[2]
+
+// DO NOT SAVE YOUR PASSWORD TO GITHUB!!
+const url =
+  `mongodb+srv://thecaptain:${password}@cluster0.rq8llnc.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Cluster0`
+
+mongoose.set('strictQuery', false)
+mongoose.connect(url)
+
+
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  important: Boolean,
+})
+
+const Note = mongoose.model('Note', noteSchema)
+
+noteSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
+*/
 
 let notes = [
     {
@@ -45,9 +81,20 @@ let notes = [
 
 
 //   all collection get
+/* 
   app.get('/api/notes', (request, response) => {
     response.json(notes)
   })
+*/
+
+
+  // with mongoose
+  app.get('/api/notes', (request, response) => {
+    Note.find({}).then(notes => {
+      response.json(notes)
+    })
+  })
+
 
 //   for individual id get
   app.get('/api/notes/:id', (request, response) => {
@@ -123,7 +170,7 @@ let notes = [
 
   // middleware
   
-  const PORT = 3000
+  const PORT = process.env.PORT;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })

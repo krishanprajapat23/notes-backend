@@ -113,6 +113,9 @@ let notes = [
       }
   })
 
+
+
+
 //   post request
   app.post('/api/notes', (request, response) => {
     // const note = request.body
@@ -128,39 +131,90 @@ let notes = [
         })
     }
 
-    const note = {
-        content: body.content,
-        important: Boolean(body.important) || false,
-        id: generateId(),
-    }
+    // const note = {
+    //     content: body.content,
+    //     important: Boolean(body.important) || false,
+    //     id: generateId(),
+    // }
 
-    notes = notes.concat(note)
+    // notes = notes.concat(note)
 
-    response.json(note)
+    // response.json(note)
+
+    //with mongoose post request=========================
+
+    const note = new Note({
+      content: body.content,
+      important: body.important || false,
+    })
+  
+    note.save().then(savedNote => {
+      response.json(savedNote)
+    })
 
   })
 
 
+    // with mangoose indiviual id get=========================
+    app.get('/api/notes/:id', (request, response) => {
+      const id = request.params.id;
+      Note.findById(id).then(note => {
+        response.json(note)
+      })
+    })
+
+
   // for update
-  app.put('/api/notes/:id', (request, response) => {
+  // app.put('/api/notes/:id', (request, response) => {
+  //   const body = request.body
+  //   const id = Number(request.params.id);
+  //   const updatedNote = notes.find(note => note.id === id);
+  //   if (updatedNote) {
+  //       updatedNote.content = body.content;
+  //       updatedNote.important = body.important;
+  //       response.json(updatedNote);
+  //   } else {
+  //       response.status(404).json({ error: 'Note not found' });
+  //   }
+  // });
+
+
+  // with Mongoose update note by ID=========================
+
+  app.put('/api/notes/:id', (request, response, next) => {
     const body = request.body
-    const id = Number(request.params.id);
-    const updatedNote = notes.find(note => note.id === id);
-    if (updatedNote) {
-        updatedNote.content = body.content;
-        updatedNote.important = body.important;
-        response.json(updatedNote);
-    } else {
-        response.status(404).json({ error: 'Note not found' });
+  
+    const note = {
+      content: body.content,
+      important: body.important,
     }
-  });
+  
+    Note.findByIdAndUpdate(request.params.id, note, { new: true })
+      .then(updatedNote => {
+        response.json(updatedNote)
+      })
+      .catch(error => next(error))
+  })
+  
+
+
 
 //   for delete
-  app.delete('/api/notes/:id', (request, response) => {
-    const id = Number(request.params.id);
-    notes = notes.filter(note => note.id !== id)
+  // app.delete('/api/notes/:id', (request, response) => {
+  //   const id = Number(request.params.id);
+  //   notes = notes.filter(note => note.id !== id)
   
-    response.status(204).end()
+  //   response.status(204).end()
+  // })
+
+
+  // with mangoose=========================
+  app.delete('/api/notes/:id', (request, response, next) => {
+    Note.findByIdAndDelete(request.params.id)
+      .then(result => {
+        response.status(204).end()
+      })
+      .catch(error => next(error))
   })
 
 

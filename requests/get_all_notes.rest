@@ -9,7 +9,7 @@ POST http://localhost:3001/api/notes/
 Content-Type: application/json
 
 {
-    "content": "testing after validation",
+    "content": "testing after structure set",
     "important": true
 }
 
@@ -21,10 +21,10 @@ DELETE http://localhost:3001/api/notes/662f53a7fcac839a7b0b6936
 
 ####
 
-PUT http://localhost:3001/api/notes/662f53a7fcac839a7b0b6936
+PUT http://localhost:3001/api/notes/6638692676116026bebeffcf
 Content-Type: application/json
 
 {
-    "content": "update testing client",
+    "content": "EDITED: testing after structure set",
     "important": false
 }

@@ -1,35 +1,17 @@
+// The note.js file under the models directory only defines the Mongoose schema for notes.
+
+
 const mongoose = require('mongoose')
 
-mongoose.set('strictQuery', false)
-
-
-//from .env file
-const url = process.env.MONGODB_URI;
-// const url = 
-
-
-console.log('connecting to', url)
-
-// log a message to the console about the success status
-mongoose.connect(url)
-  .then(result => {
-    console.log('connected to MongoDB')
-  })
-  .catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
-
 const noteSchema = new mongoose.Schema({
-  // validation functionality available in Mongoose
   content: {
     type: String,
-    minLength: 5,
-    required: true
+    required: true,
+    minlength: 5
   },
   important: Boolean,
 })
 
-// The toJSON method
 noteSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
@@ -37,6 +19,5 @@ noteSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
-
 
 module.exports = mongoose.model('Note', noteSchema)

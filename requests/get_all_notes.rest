@@ -5,19 +5,21 @@ GET http://localhost:3001/api/notes
 
 ####
 
+# only when login applied..>> Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 POST http://localhost:3001/api/notes/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY2ODI0NzVlZDE3YjU3YjAyYWY0ZmU3YSIsImlhdCI6MTcxOTgyMDExNX0.jgUQ7XllLMY1mggkDGty4BNLNJsY3qpOmA2bcqzI6dU
+
 
 {
-    "content": "this is created by user root2",
-    "important": true,
-    "userId": "6682475ed17b57b02af4fe7a"
+    "content": "this is created by user root after auth 60sec after 60sec",
+    "important": true
 }
 
 
 ####
 
-DELETE http://localhost:3001/api/notes/662f53a7fcac839a7b0b6936
+DELETE http://localhost:3001/api/notes/6682625481c2b7f8de21ed7c
 
 
 

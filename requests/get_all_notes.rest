@@ -9,9 +9,11 @@ POST http://localhost:3001/api/notes/
 Content-Type: application/json
 
 {
-    "content": "testing after structure set",
-    "important": true
+    "content": "this is created by user root2",
+    "important": true,
+    "userId": "6682475ed17b57b02af4fe7a"
 }
+
 
 ####
 
@@ -25,6 +27,6 @@ PUT http://localhost:3001/api/notes/6638692676116026bebeffcf
 Content-Type: application/json
 
 {
-    "content": "EDITED: testing after structure set",
+    "content": "EDITED2: testing after structure set",
     "important": false
 }
